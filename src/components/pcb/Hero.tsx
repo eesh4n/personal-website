@@ -206,9 +206,9 @@ export function Hero() {
         </div>
       </div>
 
-      <div style={{ position: "sticky", top: 90 }}>
-        <div style={{ position: "relative", height: proj ? 420 : 580, overflow: "hidden", transition: "height .55s cubic-bezier(.34,1.1,.4,1)" }}>
-          <div style={{ width: "100%", height: 580, touchAction: "none", transformOrigin: "top center", transform: proj ? "scale(0.7241)" : "scale(1)", transition: "transform .55s cubic-bezier(.34,1.1,.4,1)" }}>
+      <div className="pcb-wrap" style={{ position: "sticky", top: 90 }}>
+        <div className="pcb-stage" style={{ position: "relative", height: proj ? 420 : 580, overflow: "hidden", transition: "height .55s cubic-bezier(.34,1.1,.4,1)" }}>
+          <div className="pcb-inner" style={{ width: "100%", height: 580, touchAction: "none", transformOrigin: "top center", transform: proj ? "scale(0.7241)" : "scale(1)", transition: "transform .55s cubic-bezier(.34,1.1,.4,1)" }}>
             <PcbMount ref={pcbRef} onSelect={onSelectProject} onHover={() => {}} />
           </div>
           <div

@@ -458,6 +458,16 @@ a:hover {
   .hero-copy {
     max-width: none !important;
   }
+  .pcb-wrap {
+    position: static !important;
+  }
+  .pcb-stage,
+  .pcb-inner {
+    height: 340px !important;
+  }
+  .pcb-inner {
+    transform: none !important;
+  }
 
   .about-grid {
     grid-template-columns: 1fr !important;
