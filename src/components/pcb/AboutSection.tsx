@@ -70,7 +70,7 @@ export function AboutSection() {
       }}
     >
       <StarfieldBg />
-      <div style={{ position: "absolute", top: "var(--space-16)", left: "var(--space-12)", fontFamily: "var(--font-mono)", color: "var(--signal-green)", fontSize: "var(--text-sm)", letterSpacing: "var(--tracking-widest)" }}>$ about</div>
+      <div className="about-label" style={{ position: "absolute", top: "var(--space-16)", left: "var(--space-12)", fontFamily: "var(--font-mono)", color: "var(--signal-green)", fontSize: "var(--text-sm)", letterSpacing: "var(--tracking-widest)" }}>$ about</div>
       <div style={{ ...reveal(0), display: "flex", flexDirection: "column", alignItems: "center", gap: "var(--space-4)" }}>
         <div className="about-avatar" style={{ borderRadius: "50%", animation: "avatar-pulse 3.2s ease-in-out infinite", width: 340, height: 340, overflow: "hidden" }}>
           <img src="/about-photo.jpg" alt="Eeshan" style={{ width: "100%", height: "100%", objectFit: "cover" }} />

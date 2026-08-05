@@ -474,6 +474,12 @@ a:hover {
     padding: var(--space-10) var(--space-5) !important;
     text-align: center;
   }
+  .about-label {
+    position: static !important;
+    display: block;
+    text-align: center;
+    margin-bottom: var(--space-6);
+  }
   .about-avatar {
     width: 200px !important;
     height: 200px !important;
