@@ -458,6 +458,13 @@ a:hover {
   .hero-copy {
     max-width: none !important;
   }
+  .uni-badge {
+    font-size: var(--text-xs) !important;
+    gap: var(--space-2) !important;
+  }
+  .uni-badge img {
+    height: 22px !important;
+  }
   .pcb-wrap {
     position: static !important;
   }

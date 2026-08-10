@@ -136,8 +136,10 @@ export function Hero() {
           Hi, I&apos;m Eeshan. I <em style={{ color: "var(--signal-cyan)", fontStyle: "italic" }}>build</em> things and obsess over <em style={{ color: "var(--signal-cyan)", fontStyle: "italic" }}>markets</em> on the side.
         </h1>
         <div
+          className="uni-badge"
           style={{
             display: "inline-flex",
+            flexWrap: "wrap",
             alignItems: "center",
             gap: "var(--space-3)",
             padding: "var(--space-2) var(--space-4)",
