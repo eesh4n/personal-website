@@ -1,8 +1,29 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "./ui";
 import { GithubIcon, LinkedInIcon, InstagramIcon, MailIcon } from "./icons";
+
+function VisitCounter() {
+  const [count, setCount] = useState<number | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch("/api/visit-count")
+      .then((r) => r.json())
+      .then((data) => {
+        if (!cancelled && typeof data?.count === "number") setCount(data.count);
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  if (count === null) return null;
+
+  return <span>visit #{count.toLocaleString()}</span>;
+}
 
 const SOCIALS = [
   { icon: <GithubIcon size={22} />, label: "GitHub", href: "https://github.com/eesh4n" },
@@ -99,6 +120,7 @@ export function SiteFooter() {
         >
           <span>Eeshan Agarwal</span>
           <span>© 2026</span>
+          <VisitCounter />
         </div>
       </div>
     </footer>
