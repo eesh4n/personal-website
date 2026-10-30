@@ -77,8 +77,8 @@ em { font-family: var(--f-serif); font-style: italic; font-weight: 400; color: v
 .mark i { display: block; font-style: italic; color: var(--muted); }
 .mark .hi { font-family: "Tiro Devanagari Hindi", var(--f-serif); font-size: 29px; line-height: 1.12; letter-spacing: 0; opacity: 0; transform: translateY(8px); filter: blur(4px); }
 .mark .hi i { font-style: normal; color: var(--c); }
-.mark:hover .en { opacity: 0; transform: translateY(-8px); filter: blur(4px); }
-.mark:hover .hi { opacity: 1; transform: none; filter: none; }
+.mark:hover .en, .mark.alt .en { opacity: 0; transform: translateY(-8px); filter: blur(4px); }
+.mark:hover .hi, .mark.alt .hi { opacity: 1; transform: none; filter: none; }
 .groups { display: flex; flex-direction: column; gap: 30px; }
 .group h3 { margin: 0 0 8px; font-family: var(--f-mono); font-weight: 400; font-size: 9.5px; letter-spacing: 0.18em; text-transform: uppercase; color: #4f4a44; }
 .item {
@@ -535,6 +535,7 @@ function openModal(it) {
 function closeModal() { modal.hidden = true; modal.innerHTML = ""; if (lastFocus) lastFocus.focus(); }
 modal.addEventListener("click", function (e) { if (e.target === modal) closeModal(); });
 
+if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) setInterval(function () { document.querySelectorAll(".mark").forEach(function (m) { m.classList.toggle("alt"); }); }, 5000);
 var currentKey = null;
 function select(key, user) {
   if (!BY[key] || key === currentKey) return;
