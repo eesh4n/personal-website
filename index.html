@@ -49,14 +49,6 @@ em { font-family: var(--f-serif); font-style: italic; font-weight: 400; color: v
   background: linear-gradient(90deg, rgba(10,9,8,0) 0%, rgba(10,9,8,0.82) 32%, rgba(10,9,8,0.92) 100%); }
 .scrim-l { position: fixed; top: 0; bottom: 0; left: 0; width: calc(var(--colL) + 80px); z-index: 1; pointer-events: none;
   background: linear-gradient(90deg, rgba(10,9,8,0.55) 0%, rgba(10,9,8,0.3) 60%, rgba(10,9,8,0) 100%); }
-.placard {
-  position: fixed; z-index: 2; left: calc(var(--colL) + 24px); bottom: calc(env(safe-area-inset-bottom, 0px) + 30px);
-  max-width: 340px; pointer-events: none; border-left: 1px solid var(--c); padding: 2px 0 2px 14px; transition: border-color .5s;
-}
-.placard b { display: block; font-family: var(--f-mono); font-weight: 400; font-size: 9.5px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--c); transition: color .5s; }
-.placard span { display: block; margin-top: 4px; font-family: var(--f-serif); font-style: italic; font-size: 17px; line-height: 1.3; color: #bcb5aa; }
-.placard.swap { animation: plac .7s ease both; }
-@keyframes plac { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
 .hint {
   position: fixed; z-index: 2; top: calc(env(safe-area-inset-top, 0px) + 72px); left: calc(var(--colL) + (100% - var(--colL) - var(--colR)) / 2); transform: translateX(-50%);
   font-family: var(--f-mono); font-size: 9.5px; letter-spacing: 0.16em; text-transform: uppercase; color: #5a554f; white-space: nowrap; pointer-events: none; transition: opacity .6s;
@@ -266,8 +258,6 @@ em { font-family: var(--f-serif); font-style: italic; font-weight: 400; color: v
   .grain { display: none; }
   .stage::after { background: radial-gradient(ellipse at 50% 50%, transparent 55%, rgba(10,9,8,0.7) 100%); }
   .scrim-r, .scrim-l { display: none; }
-  .placard { position: absolute; left: 16px; bottom: 10px; max-width: calc(100% - 32px); padding-left: 10px; }
-  .placard span { display: none; }
   .hint { display: none; }
   .modes { position: absolute; top: 10px; left: 50%; }
   .mode { padding: 6px 10px; font-size: 14px; }
@@ -287,7 +277,7 @@ em { font-family: var(--f-serif); font-style: italic; font-weight: 400; color: v
   .m-foot { display: flex; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .panel-inner.enter > *, .placard.swap, .item, .visits { animation: none; }
+  .panel-inner.enter > *, .item, .visits { animation: none; }
   .win-lines span, .award::after, .dot { animation: none; }
   .item, .item::before, .hint, .loading, .act, .tile, .rec-frame { transition: none; }
 }
@@ -300,7 +290,6 @@ em { font-family: var(--f-serif); font-style: italic; font-weight: 400; color: v
   <div class="hint" id="hint">Pick a cursor, then move over the particles</div>
   <div class="modes" id="modes" role="group" aria-label="Cursor effect"></div>
   <a class="page-link" id="pageLink" href="resume.pdf" target="_blank" rel="noopener" aria-label="Open my resume as a PDF" hidden><span>Open the PDF ↗</span></a>
-  <div class="placard" id="placard"></div>
 </section>
 <div class="scrim-l" aria-hidden="true"></div>
 <div class="scrim-r" aria-hidden="true"></div>
@@ -353,13 +342,11 @@ var TILES = [
 /* ================= content ================= */
 var ITEMS = [
   { key: "me", group: null, label: "Me", kicker: "About", date: "", color: "#e3bc72",
-    fig: "Self-portrait, rendered in particles",
     title: "Eeshan Agarwal",
     pitch: "From circuits to code, I build things that *actually work*.",
     about: true },
 
   { key: "odte", group: "Experience", label: "0DTE Options", kicker: "Experience", date: "2026 – now", color: "#b9a2ff",
-    fig: "P&L surface of a same-day straddle, sharpening into its expiry V",
     title: "0DTE Options Strategy", role: "Algorithmic Trading Developer",
     pitch: "Building a same-day QQQ options strategy with a trader who manages a *$200K portfolio*.",
     stats: [["$200K", "portfolio"], ["QQQ", "0DTE options"], ["Daily", "chain snapshots"]],
@@ -373,7 +360,6 @@ var ITEMS = [
     grad: "linear-gradient(135deg, #2a1650, #7a4fc4 55%, #e3bc72)" },
 
   { key: "sentiment", group: "Projects", label: "Sentiment Desk", kicker: "Project", date: "2026 – now", color: "#4fe0a0",
-    fig: "Sentiment ridgelines: one ticker per line, read left to right through time",
     title: "Sentiment Desk",
     pitch: "An LLM reads Reddit's finance subs every morning and hands you *the real arguments*.",
     stats: [["1,200+", "theses extracted"], ["100+", "posts a day"], ["11", "subreddits"]],
@@ -390,7 +376,6 @@ var ITEMS = [
     grad: "linear-gradient(135deg, #ff8a3d, #c2185b 55%, #2a0f3d)" },
 
   { key: "rivalruns", group: "Projects", label: "RivalRuns", kicker: "Hackathon project", date: "2026", color: "#ff6f9f",
-    fig: "Chronophotograph of a runner: four frames of one stride",
     title: "RivalRuns",
     award: { place: "2", suf: "nd", title: "Best Overall Hack", sub: "Hack the Valley Hack Days · out of 25+ teams" },
     pitch: "A two-player runner with *no controllers*. One player dodges with their body, the other attacks with their hands.",
@@ -407,7 +392,6 @@ var ITEMS = [
     grad: "linear-gradient(135deg, #6b5bff, #ff5fa2 60%, #1a1240)" },
 
   { key: "cardiq", group: "Projects", label: "CardIQ", kicker: "Project", date: "2026", color: "#ffb35c",
-    fig: "A fanned hand of five cards, dealt by your spending",
     title: "CardIQ",
     pitch: "Finds the Canadian credit card that *actually pays you back*, based on how you really spend.",
     stats: [["30+", "cards scored"], ["7", "spending categories"], ["Top 3", "picks per person"]],
@@ -424,7 +408,6 @@ var ITEMS = [
     grad: "linear-gradient(135deg, #7ff0e0, #f4e7ff 55%, #ffd1e8)" },
 
   { key: "calmpost", group: "Projects", label: "Calmpost", kicker: "Hackathon project", date: "2026", color: "#9be070",
-    fig: "The sensor-wired bin, lid up, watching what drops in",
     title: "Calmpost",
     award: { place: "2", suf: "nd", title: "Best Hack, UofT School of Cities track", sub: "Hack the Valley 11" },
     pitch: "A smart compost bin and app that *see what you throw away*, and tell you whether your compost is actually working.",
@@ -440,12 +423,10 @@ var ITEMS = [
     grad: "linear-gradient(135deg, #2f6b3a, #9be070 55%, #f2e6b8)" },
 
   { key: "resume", group: null, label: "Resume", kicker: "Resume", date: "", color: "#ece6db",
-    fig: "Curled page, one of one. Click it to open.",
     title: "Resume",
     pitch: "Click the *page* to open the PDF." },
 
   { key: "contact", group: null, label: "Contact", kicker: "Contact", date: "", color: "#e3bc72",
-    fig: "Paper plane, outbound",
     title: "Say hi",
     pitch: "I'm looking for *summer 2027* internships in software, quant, and fintech. The fastest way to reach me is email.",
     contact: true }
@@ -474,7 +455,7 @@ var groupsEl = document.getElementById("groups"), buttons = {};
 })();
 
 /* ================= panel ================= */
-var panel = document.getElementById("panel"), modal = document.getElementById("modal"), placard = document.getElementById("placard");
+var panel = document.getElementById("panel"), modal = document.getElementById("modal");
 var REC_CAP = {odte: 'How the pipeline works. Results stay private.', sentiment: 'Real extracted theses, recorded on a local run.', rivalruns: 'The real game in its keyboard demo mode, with scripted obstacles.', cardiq: 'The real scoring engine with a sample spending profile.', calmpost: "Screens from the team's app."};
 function recCard(it, controls) {
   var motion = !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -550,9 +531,6 @@ function select(key, user) {
   });
   render(it);
   if (user && window.innerWidth <= 860) window.scrollTo({ top: 0, behavior: reduce ? "auto" : "smooth" });
-  var n = ITEMS.indexOf(it) + 1;
-  placard.innerHTML = '<b>Fig. ' + (n < 10 ? "0" : "") + n + ' · ' + esc(it.label) + '</b><span>' + esc(it.fig) + '</span>';
-  placard.classList.remove("swap"); void placard.offsetWidth; placard.classList.add("swap");
   document.getElementById("pageLink").hidden = key !== "resume";
   if (particles) particles.morph(key);
   try { history.replaceState(null, "", "#" + key); } catch (e) {}
