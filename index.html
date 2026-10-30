@@ -236,6 +236,7 @@ em { font-family: var(--f-serif); font-style: italic; font-weight: 400; color: v
 .win-bar { display: flex; gap: 5px; padding: 8px 10px; background: #ece8e1; }
 .win-bar i { width: 8px; height: 8px; border-radius: 50%; background: #d3cec5; }
 .win-bar i:nth-child(1) { background: #ff5f57; } .win-bar i:nth-child(2) { background: #febc2e; } .win-bar i:nth-child(3) { background: #28c840; }
+.win-video { display: block; width: 100%; aspect-ratio: 16 / 9; background: #0a0908; }
 .win-body { aspect-ratio: 16 / 9; max-width: 100%; padding: 16px 18px; display: flex; flex-direction: column; justify-content: space-between; }
 .win-body b { font-family: var(--f-serif); font-weight: 400; font-size: 30px; line-height: 1; }
 .win-lines { display: grid; gap: 6px; }
@@ -423,7 +424,7 @@ var ITEMS = [
     grad: "linear-gradient(135deg, #7ff0e0, #f4e7ff 55%, #ffd1e8)" },
 
   { key: "calmpost", group: "Projects", label: "Calmpost", kicker: "Hackathon project", date: "2026", color: "#9be070",
-    fig: "Sapling rising from a sensor-wired bin",
+    fig: "The sensor-wired bin, lid up, watching what drops in",
     title: "Calmpost",
     award: { place: "2", suf: "nd", title: "Best Hack, UofT School of Cities track", sub: "Hack the Valley 11" },
     pitch: "A smart compost bin and app that *see what you throw away*, and tell you whether your compost is actually working.",
@@ -474,9 +475,11 @@ var groupsEl = document.getElementById("groups"), buttons = {};
 
 /* ================= panel ================= */
 var panel = document.getElementById("panel"), modal = document.getElementById("modal"), placard = document.getElementById("placard");
-function recCard(it) {
+var REC_CAP = {odte: 'How the pipeline works. Results stay private.', sentiment: 'Real extracted theses, recorded on a local run.', rivalruns: 'The real game in its keyboard demo mode, with scripted obstacles.', cardiq: 'The real scoring engine with a sample spending profile.', calmpost: "Screens from the team's app."};
+function recCard(it, controls) {
+  var motion = !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   return '<div class="rec-frame" style="--grad:' + it.grad + '"><div class="win"><div class="win-bar"><i></i><i></i><i></i></div>' +
-    '<div class="win-body"><b>' + esc(it.title) + '</b><div class="win-lines"><span></span><span></span><span></span></div></div></div></div>';
+    '<video class="win-video" src="assets/rec/' + it.key + '.mp4" muted loop playsinline preload="metadata"' + (motion ? ' autoplay' : '') + (controls || !motion ? ' controls' : '') + ' aria-label="' + esc(it.title) + ' recording"></video></div></div>';
 }
 function tiles() {
   return '<div class="linkgrid">' + TILES.map(function (t) { return '<a class="tile" style="--b:' + t[4] + ';--on:' + t[5] + '" href="' + esc(t[2]) + '" target="_blank" rel="noopener"><span class="tile-ico">' + ICON[t[3]] + '</span><span><b>' + esc(t[0]) + '</b><small>' + esc(t[1]) + '</small></span><i>↗</i></a>'; }).join("") + '</div>';
@@ -503,7 +506,7 @@ function render(it) {
   if (it.problem) h += '<p class="label">The problem</p><p class="problem">' + esc(it.problem) + '</p>';
   if (it.how) h += '<p class="label">How it works</p><ul class="did">' + it.how.map(function (d) { return '<li><strong>' + esc(d[0]) + '</strong><span>' + esc(d[1]) + '</span></li>'; }).join("") + '</ul>';
   if (it.impact) h += '<p class="label">Impact</p><ul class="impact">' + it.impact.map(function (d) { return '<li>' + esc(d) + '</li>'; }).join("") + '</ul>';
-  if (it.grad) h += '<button class="rec" type="button" data-expand>' + recCard(it) + '<div class="rec-meta"><span>Recording coming soon</span><em>Expand ↗</em></div></button>';
+  if (it.grad) h += '<button class="rec" type="button" data-expand>' + recCard(it) + '<div class="rec-meta"><span>' + esc(REC_CAP[it.key]) + '</span><em>Expand ↗</em></div></button>';
   if (it.tags) h += '<p class="label">Built with</p><div class="tags">' + it.tags.map(function (t) { return '<span>' + esc(t) + '</span>'; }).join("") + '</div>';
   if (it.note) h += '<p class="note">' + esc(it.note) + '</p>';
   h += '</div>';
@@ -527,8 +530,8 @@ function countUp() {
 var lastFocus = null;
 function openModal(it) {
   lastFocus = document.activeElement;
-  modal.innerHTML = '<div class="modal-card"><div class="modal-top"><span>' + esc(it.title) + '</span><button class="copy" type="button" data-close>Close</button></div>' + recCard(it) +
-    '<div class="rec-meta"><span>Recording coming soon. This frame will loop the project in use.</span></div></div>';
+  modal.innerHTML = '<div class="modal-card"><div class="modal-top"><span>' + esc(it.title) + '</span><button class="copy" type="button" data-close>Close</button></div>' + recCard(it, true) +
+    '<div class="rec-meta"><span>' + esc(REC_CAP[it.key]) + '</span></div></div>';
   modal.hidden = false;
   var c = modal.querySelector("[data-close]"); c.addEventListener("click", closeModal); c.focus();
 }
@@ -675,28 +678,53 @@ var GEN = {
     b.xform(0, rotX(-0.28)); b.xform(0, shift(0, 3, -4));
   },
   calmpost: function (b) {
-    var bin = hex("#2f5f37"), slat = hex("#4d8a55"), soil = hex("#6b4a2e"), stem = hex("#7ccc55"), leafA = hex("#c3f08f"), leafB = hex("#3f8f35"), i;
-    for (i = 0; i < b.n * 0.34; i++) {
-      var a = Math.random() * 6.283, h = Math.random(), r = 8.6 + 1.6 * h, onSlat = ((a / 6.283 * 16) % 1) < 0.18;
-      b.put(Math.cos(a) * r, -24 + h * 17, Math.sin(a) * r, onSlat ? slat : mix(bin, [0.05, 0.1, 0.06], Math.random() * 0.4), 0);
+    var dark = hex("#2a2d2b"), lite = hex("#a9b0aa"), i, a, y, r;
+    function binR(y) { return 7 + (y + 25) / 26 * 4.5; }
+    function shade(a, k) { var l = Math.pow(Math.max(0, Math.cos(a - 1.0)), 2.2) * 0.75 + Math.pow(Math.max(0, Math.cos(a + 0.9)), 10.0) * 0.35; return mix(dark, lite, l * (k == null ? 1 : k)); }
+    /* tapered bin body and interior */
+    for (i = 0; i < b.n * 0.25; i++) { a = Math.random() * 6.283; y = rnd(-25, 1); r = binR(y); b.put(Math.cos(a) * r, y, Math.sin(a) * r, shade(a), 0); }
+    for (i = 0; i < b.n * 0.06; i++) { a = Math.random() * 6.283; y = rnd(-10, 1); r = binR(y) - 0.5; b.put(Math.cos(a) * r, y, Math.sin(a) * r, mix([0.03, 0.03, 0.03], dark, 0.55 + (y + 10) / 25), 0); }
+    for (i = 0; i < b.n * 0.03; i++) { a = Math.random() * 6.283; r = 7 * Math.sqrt(Math.random()); b.put(Math.cos(a) * r, -25, Math.sin(a) * r, dark, 0); }
+    /* rolled rim */
+    for (i = 0; i < b.n * 0.07; i++) { a = Math.random() * 6.283; var q = Math.random() * 6.283, tr = 0.8; r = 12.1 + Math.cos(q) * tr; b.put(Math.cos(a) * r, 1.2 + Math.sin(q) * tr, Math.sin(a) * r, mix(dark, lite, 0.35 + 0.65 * Math.max(0, Math.sin(q)) * (0.45 + 0.55 * Math.max(0, Math.cos(a - 1.0)))), 1); }
+    /* lid, hinged open at the back */
+    var start = b.i;
+    for (i = 0; i < b.n * 0.17; i++) {
+      a = Math.random() * 6.283; r = 12.2 * Math.sqrt(Math.random());
+      var lx = Math.cos(a) * r, lz = Math.sin(a) * r, sheen = Math.exp(-Math.pow((lx - 3.5 + lz * 0.35) / 2.4, 2)) * 0.7, edge = r > 11.7 ? 0.4 : 0;
+      b.put(lx, -0.09 * (144 - r * r) * 0.12, lz + 12.2, mix(hex("#191b1a"), lite, 0.1 + sheen + edge), 2);
     }
-    for (i = 0; i < b.n * 0.03; i++) { var ra = Math.random() * 6.283; b.put(Math.cos(ra) * 10.3, -7 + rnd(-0.3, 0.3), Math.sin(ra) * 10.3, slat, 1); }
-    for (i = 0; i < b.n * 0.07; i++) { var sa = Math.random() * 6.283, sr = 9.8 * Math.sqrt(Math.random()); b.put(Math.cos(sa) * sr, -7.6 + rnd(-0.4, 0.6), Math.sin(sa) * sr, mix(soil, [0.25, 0.17, 0.1], Math.random() * 0.5), 2); }
-    [[-0.5, "#ff9a62"], [-0.15, "#ff9a62"], [0.2, "#62c8ff"], [0.55, "#62c8ff"]].forEach(function (s) { for (var k = 0; k < b.n * 0.006; k++) { var ang = Math.PI / 2 + s[0] + rnd(-0.05, 0.05); b.put(Math.cos(ang) * 10.1, -15 + rnd(-0.6, 0.6), Math.sin(ang) * 10.1, hex(s[1]), 3); } });
-    function stemAt(t) { return [1.8 * Math.sin(t * Math.PI * 1.1), -7.5 + t * 30, 0.8 * Math.sin(t * 4)]; }
-    for (i = 0; i < b.n * 0.06; i++) { var t = Math.random(), p = stemAt(t), q = Math.random() * 6.283, rr2 = 0.55 * (1.2 - t * 0.6); b.put(p[0] + Math.cos(q) * rr2, p[1], p[2] + Math.sin(q) * rr2, stem, 4); }
-    [[0.32, 0, 9], [0.5, Math.PI, 10.5], [0.68, Math.PI / 2, 9.5], [0.84, -Math.PI / 2, 8], [0.98, 0.3, 6]].forEach(function (L) {
-      var start = b.i, n = Math.floor(b.n * 0.07), len = L[2], wid = len * 0.38;
-      for (var k = 0; k < n; k++) {
-        var u = Math.random() * len, wmax = wid * Math.sin(Math.PI * u / len), v = rnd(-wmax, wmax), vein = Math.abs(v) < 0.22 || Math.abs(Math.abs(v) - (u * 0.35 % 2.2)) < 0.12;
-        var c = mix(leafA, leafB, u / len * 0.7 + Math.abs(v) / (wid + 0.01) * 0.3); if (vein) c = mix(c, [0.95, 1, 0.85], 0.5);
-        b.put(u, 0.06 * v * v + u * 0.18, v, c, 5);
-      }
-      var p = stemAt(L[0]); b.xform(start, rotY(L[1])); b.xform(start, shift(p[0], p[1], p[2]));
+    b.xform(start, rotX(-1.85)); b.xform(start, shift(0, 2, -12));
+    /* breadboard and microcontroller strapped to the side */
+    function box(u0, u1, v0, v1, w0, w1, cf, n, tag) { for (var k = 0; k < n; k++) { var f = Math.random(), u = rnd(u0, u1), v = rnd(v0, v1), w = w1; if (f < 0.14) w = w0 + Math.random() * (w1 - w0), u = Math.random() < 0.5 ? u0 : u1; else if (f < 0.28) w = w0 + Math.random() * (w1 - w0), v = Math.random() < 0.5 ? v0 : v1; b.put(w, v, u, cf(u, v), tag); } }
+    start = b.i;
+    var white = hex("#e7e5dc"), blue = hex("#2f6fd0"), track = hex("#a9a79f");
+    box(-5.2, 5.2, -14, -7.2, 10.2, 11.8, function (u, v) { return (Math.abs(v + 10.6) < 0.45) ? track : (Math.floor((u + 6) / 0.8) % 2 === 0 && Math.abs(v + 10.6) > 1 ? mix(white, track, 0.45) : white); }, b.n * 0.05, 3);
+    box(-3.8, 3.8, -7.4, -1.6, 11.6, 13, function (u, v) { return Math.abs(u) < 1.2 && Math.abs(v + 4.5) < 1 ? hex("#111317") : (v > -2.5 ? hex("#111317") : blue); }, b.n * 0.035, 3);
+    var boardEnd = b.i;
+    /* status LEDs */
+    [["#ff5a4a", -2.6], ["#7dff7a", -1.4], ["#ffd36a", -0.2]].forEach(function (L) { for (var k = 0; k < b.n * 0.0015; k++) b.put(13.15, -3 + rnd(-0.2, 0.2), L[1] + rnd(-0.2, 0.2), hex(L[0]), 3.5); });
+    b.xform(start, rotY(-0.72));
+    function curve(P0, P1, P2, P3, c, n, tag, jit) { for (var k = 0; k < n; k++) { var t = Math.random(), m = 1 - t, A = m * m * m, B = 3 * m * m * t, C = 3 * m * t * t, D = t * t * t; b.put(A * P0[0] + B * P1[0] + C * P2[0] + D * P3[0] + rnd(-jit, jit), A * P0[1] + B * P1[1] + C * P2[1] + D * P3[1] + rnd(-jit, jit), A * P0[2] + B * P1[2] + C * P2[2] + D * P3[2] + rnd(-jit, jit), c, tag); } }
+    /* colored jumper wires from the boards, sensor lead up to the lid */
+    var cos72 = Math.cos(0.72), sin72 = Math.sin(0.72);
+    function onBoard(u, v, w) { return [w * cos72 + u * sin72, v, w * sin72 + u * cos72]; }
+    ["#ff5a4a", "#ffb04d", "#ffe16a", "#6fe08a", "#62c8ff", "#c79bff"].forEach(function (c, j) {
+      var P = onBoard(-3 + j * 1.2, -2.5, 13), Q = onBoard(-4 + j * 1.5, -9, 12);
+      curve(P, [P[0] + 5, P[1] + 1 - j * 0.3, P[2] + 3], [Q[0] + 5, Q[1] + 2, Q[2] + 3], Q, hex(c), b.n * 0.009, 4, 0.1);
     });
-    var bub = hex("#d8f5c8");
-    while (b.left() > 0) { var ba = Math.random() * 6.283, br = rnd(3, 13); b.put(Math.cos(ba) * br, rnd(-6, 22), Math.sin(ba) * br * 0.6, mix([0.05, 0.08, 0.05], bub, 0.3 + Math.random() * 0.4), 6); }
-    b.xform(0, rotX(0.18)); b.xform(0, shift(0, 1, 0));
+    var cable = hex("#5b605c");
+    curve(onBoard(1, -1.6, 12.5), [16, 10, 8], [10, 20, -6], [5, 18, -12], cable, b.n * 0.012, 6, 0.1);
+    /* tangle of cables around the base */
+    for (i = 0; i < 26; i++) {
+      var a0 = rnd(-0.4, 3.4), a1 = a0 + rnd(0.6, 2.2), r0 = rnd(7, 16), r1 = rnd(7, 17);
+      curve([Math.cos(a0) * r0, -25 + rnd(0, 1.5), Math.sin(a0) * r0], [Math.cos(a0 + 0.5) * rnd(11, 20), rnd(-25, -17), Math.sin(a0 + 0.5) * rnd(11, 20)], [Math.cos(a1 - 0.5) * rnd(11, 20), rnd(-25, -17), Math.sin(a1 - 0.5) * rnd(11, 20)], [Math.cos(a1) * r1, -25, Math.sin(a1) * r1], mix(dark, cable, Math.random()), b.n * 0.0045, 6, 0.08);
+    }
+    for (i = 0; i < 6; i++) { var P = onBoard(-4 + i * 1.6, -14, 11); curve(P, [P[0] + rnd(-1, 3), -17, P[2] + rnd(0, 3)], [rnd(4, 14), -21, rnd(4, 13)], [rnd(3, 14), -25, rnd(4, 14)], cable, b.n * 0.005, 6, 0.08); }
+    /* a scrap dropping into the bin past the camera; everything left goes to it */
+    var scrap = [hex("#9be070"), hex("#d8f58a"), hex("#ffb04d")];
+    while (b.left() > 0) { a = Math.random() * 6.283; var w = Math.acos(2 * Math.random() - 1); r = 1.9 * Math.cbrt(Math.random()); b.put(Math.sin(w) * Math.cos(a) * r * 1.2, 22 + Math.cos(w) * r, Math.sin(w) * Math.sin(a) * r, scrap[(Math.random() * 3) | 0], 5); }
+    b.xform(0, rotX(0.3)); b.xform(0, rotY(-0.32)); b.xform(0, shift(-1, 0, 0));
   },
   resume: function (b) {
     var paper = hex("#5e594f"), ink = hex("#efe9de"), gold = hex("#e3bc72"), W = 40, H = 52, i;
@@ -767,9 +795,12 @@ var VERT = [
   "  }",
   /* Calmpost: the sapling sways, bubbles rise, sensors pulse */
   "  else if (uMode < 5.5) {",
-  "    if (aTag > 3.5 && aTag < 5.5) { float h = max(0.0, p.y + 7.0) / 30.0; d.x = sin(T * 1.3) * h * 2.0; d.z = cos(T * 1.05) * h * 1.3; d.y = sin(T * 2.0 + p.x) * h * 0.4; }",
-  "    else if (aTag > 5.5) { float ny = mod(p.y + 6.0 + T * 4.0 + aSeed * 30.0, 30.0) - 6.0; d.y = ny - p.y; g = -smoothstep(16.0, 24.0, ny) * 0.9; }",
-  "    else if (aTag > 2.5) g = (sin(T * 3.0 + aSeed * 3.0) * 0.5 + 0.5) * 1.0;",
+  "    float hs = sin(T * 0.7);",
+  "    if (aTag > 1.5 && aTag < 2.5) { float h = max(0.0, p.y); d.z = -hs * h * 0.05; d.y = hs * h * 0.012; }",
+  "    else if (aTag > 2.5 && aTag < 3.9) { if (aTag > 3.2) g = step(0.5, fract(T * 1.1 + aSeed)) * 1.4 - 0.2; }",
+  "    else if (aTag > 3.9 && aTag < 4.5) g = exp(-pow((p.x + p.y * 0.8 - (mod(T * 8.0, 30.0) - 8.0)) / 1.6, 2.0)) * 1.2;",
+  "    else if (aTag > 4.5 && aTag < 5.5) { float fall = mod(T * 0.45, 1.0); float q = fall * fall * 40.0; d.y = -q; d.x = sin(T * 3.0 + aSeed * 6.0) * 0.12; g = -smoothstep(23.0, 27.0, q) - smoothstep(0.94, 1.0, 1.0 - fall); }",
+  "    else if (aTag > 5.5) g = exp(-pow((p.x + 14.0 - mod(T * 5.0, 44.0)) / 2.0, 2.0)) * 0.5;",
   "  }",
   /* Resume: the page flutters and a reading line scans down it */
   "  else if (uMode < 6.5) {",
