@@ -113,6 +113,11 @@ em { font-family: var(--f-serif); font-style: italic; font-weight: 400; color: v
 
 .index .mark, .index .item, .index .group h3, .index .socials a, .index .keys, .index .visits { text-transform: lowercase; }
 
+.m-foot { display: none; position: relative; z-index: 1; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 18px; margin: 0 16px; padding: 18px 0 calc(env(safe-area-inset-bottom, 0px) + 26px); border-top: 1px solid var(--line); font-family: var(--f-mono); font-size: 11px; color: #7c766d; }
+.m-foot b { font-weight: 400; color: var(--text); font-variant-numeric: tabular-nums; }
+.m-foot div { display: flex; gap: 14px; }
+.m-foot a { color: #9b958c; text-decoration: none; }
+
 /* ---------- panel ---------- */
 .panel { min-height: 0; overflow-y: auto; scrollbar-width: thin; scrollbar-color: #26231f transparent;
   padding: calc(env(safe-area-inset-top, 0px) + 38px) max(44px, env(safe-area-inset-right, 0px)) calc(env(safe-area-inset-bottom, 0px) + 44px) 16px; }
@@ -254,17 +259,19 @@ em { font-family: var(--f-serif); font-style: italic; font-weight: 400; color: v
 
 @media (max-width: 1180px) and (min-width: 861px) { :root { --colL: 210px; --colR: 400px; } .item { font-size: 20px; } }
 @media (max-width: 860px) {
-  .app { display: block; height: auto; pointer-events: auto; }
-  .stage { position: sticky; top: 0; z-index: 3; height: 44vh; background: var(--bg); }
+  html, body { height: auto; }
+  .app { display: block; height: auto; pointer-events: auto; position: static; z-index: auto; }
+  .stage { position: sticky; top: 0; z-index: 5; height: 40vh; height: 40svh; background: var(--bg); overflow: hidden; }
+  .grain { display: none; }
   .stage::after { background: radial-gradient(ellipse at 50% 50%, transparent 55%, rgba(10,9,8,0.7) 100%); }
   .scrim-r, .scrim-l { display: none; }
-  .placard { position: absolute; left: 16px; bottom: 12px; max-width: calc(100% - 32px); }
-  .placard span { font-size: 14px; }
+  .placard { position: absolute; left: 16px; bottom: 10px; max-width: calc(100% - 32px); padding-left: 10px; }
+  .placard span { display: none; }
   .hint { display: none; }
   .modes { position: absolute; top: 10px; left: 50%; }
-  .mode { padding: 4px 9px; font-size: 14px; }
+  .mode { padding: 6px 10px; font-size: 14px; }
   .index {
-    position: sticky; top: 44vh; z-index: 3; flex-direction: row; justify-content: flex-start; align-items: center; gap: 0; overflow-x: auto; overflow-y: hidden;
+    position: sticky; top: 40vh; top: 40svh; z-index: 4; flex-direction: row; justify-content: flex-start; align-items: center; gap: 0; overflow-x: auto; overflow-y: hidden;
     padding: 8px max(16px, env(safe-area-inset-right, 0px)) 8px max(16px, env(safe-area-inset-left, 0px));
     border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); background: var(--bg);
   }
@@ -273,8 +280,10 @@ em { font-family: var(--f-serif); font-style: italic; font-weight: 400; color: v
   .item { width: auto; white-space: nowrap; font-size: 19px; padding: 6px 16px 6px 0; }
   .item::before { display: none; }
   .item:hover, .item[aria-current="true"] { transform: none; }
-  .panel { padding: 26px max(16px, env(safe-area-inset-right, 0px)) calc(env(safe-area-inset-bottom, 0px) + 44px) max(16px, env(safe-area-inset-left, 0px)); }
+  .panel { position: relative; z-index: 1; overflow: visible; padding: 26px max(16px, env(safe-area-inset-right, 0px)) calc(env(safe-area-inset-bottom, 0px) + 44px) max(16px, env(safe-area-inset-left, 0px)); }
   .did li { grid-template-columns: 72px minmax(0, 1fr); }
+  .panel h1 { font-size: 46px; }
+  .m-foot { display: flex; }
 }
 @media (prefers-reduced-motion: reduce) {
   .panel-inner.enter > *, .placard.swap, .item, .visits { animation: none; }
@@ -305,12 +314,13 @@ em { font-family: var(--f-serif); font-style: italic; font-weight: 400; color: v
         <a href="https://github.com/eesh4n" target="_blank" rel="noopener">GitHub <i>↗</i></a>
         <a href="https://www.instagram.com/eeshan.agarwal/" target="_blank" rel="noopener">Instagram <i>↗</i></a>
       </div>
-      <div class="visits" id="visits"><i></i><b id="visitN">—</b> visits</div>
+      <div class="visits" id="visits"><i></i><b class="visitN">—</b> visits</div>
       <div class="keys">↑ ↓ to browse</div>
     </div>
   </nav>
   <div aria-hidden="true"></div>
   <main class="panel" id="panel" aria-live="polite"></main>
+  <footer class="m-foot"><span><b class="visitN">—</b> visits</span><div><a href="resume.pdf" target="_blank" rel="noopener">resume</a><a href="https://www.linkedin.com/in/eeshan-agarwal-7b7b85376" target="_blank" rel="noopener">linkedin</a><a href="https://github.com/eesh4n" target="_blank" rel="noopener">github</a><a href="https://www.instagram.com/eeshan.agarwal/" target="_blank" rel="noopener">instagram</a></div></footer>
 </div>
 <div class="modal" id="modal" hidden role="dialog" aria-modal="true" aria-label="Project recording"></div>
 <div class="grain" aria-hidden="true"></div>
@@ -536,6 +546,7 @@ function select(key, user) {
     if (k === key && user && window.innerWidth <= 860 && buttons[k].scrollIntoView) buttons[k].scrollIntoView({ block: "nearest", inline: "center", behavior: "smooth" });
   });
   render(it);
+  if (user && window.innerWidth <= 860) window.scrollTo({ top: 0, behavior: reduce ? "auto" : "smooth" });
   var n = ITEMS.indexOf(it) + 1;
   placard.innerHTML = '<b>Fig. ' + (n < 10 ? "0" : "") + n + ' · ' + esc(it.label) + '</b><span>' + esc(it.fig) + '</span>';
   placard.classList.remove("swap"); void placard.offsetWidth; placard.classList.add("swap");
@@ -896,7 +907,9 @@ function Particles(canvas) {
   window.addEventListener("pointermove", pointer);
   window.addEventListener("pointerdown", pointer);
   document.documentElement.addEventListener("pointerleave", function () { mouseOnT = 0; nx = ny = 0; });
-  window.addEventListener("pointerup", function (e) { if (e.pointerType !== "mouse") { mouseOnT = 0; nx = ny = 0; } });
+  function release(e) { if (e.pointerType !== "mouse") { mouseOnT = 0; nx = ny = 0; } }
+  window.addEventListener("pointerup", release);
+  window.addEventListener("pointercancel", release);
 
   function resize() {
     var w = canvas.clientWidth, h = canvas.clientHeight; if (!w || !h) return;
@@ -908,7 +921,7 @@ function Particles(canvas) {
       avail = Math.max(260, w - L - R); cx = L + avail / 2;
     }
     camera.setViewOffset(w, h, w / 2 - cx, 0, w, h);
-    camera.position.z = 74 / (2 * Math.tan(19 * Math.PI / 180) * Math.min(1, avail / h));
+    camera.position.z = (window.innerWidth > 860 ? 74 : 92) / (2 * Math.tan(19 * Math.PI / 180) * Math.min(1, avail / h));
     camera.updateProjectionMatrix(); camera.updateMatrixWorld();
     U.uScale.value = Math.max(0.6, Math.min(1.35, h / 800));
     var perUnit = h / (2 * camera.position.z * Math.tan(19 * Math.PI / 180)), link = document.getElementById("pageLink");
@@ -961,9 +974,10 @@ function Particles(canvas) {
 /* ================= visit counter ================= */
 fetch("/api/visit-count", { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; }).then(function (d) {
   if (!d || typeof d.count !== "number") return;
-  var el = document.getElementById("visitN"), t0 = performance.now();
-  if (reduce) { el.textContent = d.count.toLocaleString("en-US"); return; }
-  (function step(now) { var k = Math.min(1, (now - t0) / 1400), e = 1 - Math.pow(1 - k, 3); el.textContent = Math.round(d.count * e).toLocaleString("en-US"); if (k < 1) requestAnimationFrame(step); })(t0);
+  var els = document.querySelectorAll(".visitN"), t0 = performance.now();
+  function show(v) { var txt = v.toLocaleString("en-US"); Array.prototype.forEach.call(els, function (el) { el.textContent = txt; }); }
+  if (reduce) { show(d.count); return; }
+  (function step(now) { var k = Math.min(1, (now - t0) / 1400), e = 1 - Math.pow(1 - k, 3); show(Math.round(d.count * e)); if (k < 1) requestAnimationFrame(step); })(t0);
 }).catch(function () {});
 
 /* ================= boot ================= */
