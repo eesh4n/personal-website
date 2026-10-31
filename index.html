@@ -276,7 +276,7 @@ em { font-family: var(--f-serif); font-style: italic; font-weight: 400; color: v
   .scrim-r, .scrim-l { display: none; }
   .hint { display: none; }
   .modes { position: absolute; top: 10px; left: 50%; }
-  .mode { padding: 6px 10px; font-size: 14px; }
+  .mode { padding: 10px 11px; font-size: 14px; }
   .index {
     position: sticky; top: 40vh; top: 40svh; z-index: 4; flex-direction: row; justify-content: flex-start; align-items: center; gap: 0; overflow-x: auto; overflow-y: hidden;
     padding: 8px max(16px, env(safe-area-inset-right, 0px)) 8px max(16px, env(safe-area-inset-left, 0px));
@@ -291,6 +291,10 @@ em { font-family: var(--f-serif); font-style: italic; font-weight: 400; color: v
   .did li { grid-template-columns: 72px minmax(0, 1fr); }
   .panel h1 { font-size: 46px; }
   .m-foot { display: flex; }
+  .m-foot a { display: inline-block; padding: 12px 0; }
+  .m-foot a:nth-child(1) { color: #e3bc72; } .m-foot a:nth-child(2) { color: #6db3f2; } .m-foot a:nth-child(3) { color: #f2eee7; } .m-foot a:nth-child(4) { color: #ff7ab6; }
+  .label, .rows dt, .sheet h4, .kicker, .entry time, .rec-meta em { font-size: 11px; }
+  .inlink { padding: 8px 0; }
 }
 @media (prefers-reduced-motion: reduce) {
   .panel-inner.enter > *, .item, .visits { animation: none; }
@@ -839,7 +843,7 @@ var FRAG = "varying vec3 vColor; varying float vLift; void main(){ float d = len
 
 function Particles(canvas) {
   var renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: false, alpha: false, powerPreference: "high-performance" });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, window.innerWidth <= 860 ? 1.5 : 2));
   renderer.setClearColor("#0a0908", 1);
   var scene = new THREE.Scene();
   var camera = new THREE.PerspectiveCamera(38, 1, 0.1, 800); camera.position.z = 100;
